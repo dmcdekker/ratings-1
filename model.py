@@ -25,54 +25,72 @@ class User(db.Model):
     zipcode = db.Column(db.String(15), nullable=True)
 
     def __repr__(self):
-    	"""Provide helpful representation when printed."""
+        """Provide helpful representation when printed."""
 
-    	return "<User user_id={} email={}>".format(self.user_id,
+        return "<User user_id={} email={}>".format(self.user_id,
                                            self.email)
 
 
 class Movie(db.Model):
-	"""Movie of ratings website."""
+    """Movie of ratings website."""
 
-	__tablename__ = "movies"
+    __tablename__ = "movies"
 
-	movie_id = db.Column(db.Integer,
-	                    autoincrement=True,
-	                    primary_key=True)
-	title = db.Column(db.String(256), nullable=False)
-	released_at = db.Column(db.DateTime(timezone=False), nullable=False)
-	imdb_url = db.Column(db.String(256), nullable=False)
+    movie_id = db.Column(db.Integer,
+                        autoincrement=True,
+                        primary_key=True)
+    title = db.Column(db.String(256), nullable=False)
+    released_at = db.Column(db.DateTime(timezone=False), nullable=False)
+    imdb_url = db.Column(db.String(256), nullable=False)
 
-	def __repr__(self):
-	    """Provide helpful representation when printed."""
+    def __repr__(self):
+        """Provide helpful representation when printed."""
 
-	    return "<Movie movie_id={} title={} released_at={} imdb_url={}>".format(self.movie_id,
-	                                           self.title, self.released_at, self.imdb_url)
+        return "<Movie movie_id={} title={} released_at={} imdb_url={}>".format(self.movie_id,
+                                               self.title, self.released_at, self.imdb_url)
 
 
 
 class Rating(db.Model):
-	"""Rating of ratings website."""
+    """Rating of ratings website."""
 
-	__tablename__ = "ratings"
+    __tablename__ = "ratings"
 
-	rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-	score = db.Column(db.Integer, nullable=True)
+    rating_id = db.Column(db.Integer,
+                          autoincrement=True,
+                          primary_key=True)
+    movie_id = db.Column(db.Integer,
+                         db.ForeignKey('movies.movie_id'))
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.user_id'))
+    score = db.Column(db.Integer)
 
     # Define relationship to user
     user = db.relationship("User",
-                           backref=db.backref("ratings", order_by=rating_id))
+                           backref=db.backref("ratings",
+                                               order_by=rating_id))
 
     # Define relationship to movie
     movie = db.relationship("Movie",
-                            backref=db.backref("ratings", order_by=rating_id))
-	def __repr__(self):
-	    """Provide helpful representation when printed."""
+                            backref=db.backref("ratings",
+                                                order_by=rating_id))
+    def __repr__(self):
+        """Provide helpful representation when printed."""
 
-	    return "<Rating rating_id={} movie_id={} user_id={} score={}>".format(self.rating_id, self.movie_id,
-	                                           self.user_id, self.score)
+        return "<Rating rating_id={} movie_id={} user_id={} score={}>".format(self.rating_id, self.movie_id,
+                                                                              self.user_id, self.score)
+# user = User.query.get(35)
+# ratings = Rating.query.filter_by(user_id=user.user_id).all()
+# movies = []
+
+# for r in ratings:
+#     movie = Movie.query.get(r.movie_id)
+#     movies.append(movie)
+
+
+# for m in movies:
+#     print m.title
+
 
 
 ##############################################################################

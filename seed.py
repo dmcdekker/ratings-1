@@ -2,7 +2,7 @@
 
 from sqlalchemy import func
 from model import User
-# from model import Rating
+from model import Rating
 from model import Movie
 
 from datetime import datetime
@@ -22,7 +22,7 @@ def load_users():
 
     # Read u.user file and insert data
     for row in open("seed_data/u.user"):
-        row = row.rstrip()
+        row = row.rstrip().decode('latin-1')
         user_id, age, gender, occupation, zipcode = row.split("|")
 
         user = User(user_id=user_id,
@@ -45,20 +45,6 @@ def load_movies():
     # we won't be trying to add duplicate users
     Movie.query.delete()
 
-    months = { 'Jan': '01',
-               'Feb': '02',
-               'Mar': '03',
-               'Apr': '04',
-               'May': '05',
-               'Jun': '06',
-               'Jul': '07',
-               'Aug': '08',
-               'Sep': '09',
-               'Oct': '10',
-               'Nov': '11',
-               'Dec': '12'
-    }
-
     # Read u.user file and insert data
     for row in open("seed_data/u.item"):
         row = row.rstrip().decode('latin-1')
@@ -69,10 +55,6 @@ def load_movies():
         else:
             released_at = None
 
-        # date_formats = released_at.split('-')[::-1]
-        # date_formats[1] = months.get(date_formats[1])
-        # released_at = '-'.join(date_formats)
-
         title = title[:-7]
 
         movie = Movie(movie_id=movie_id,
@@ -80,8 +62,7 @@ def load_movies():
                     released_at=released_at,
                     imdb_url=imdb_url
                     )
-        print type(title)
-
+        
         # We need to add to the session or it won't ever be stored
         db.session.add(movie)
 
@@ -91,6 +72,31 @@ def load_movies():
 
 def load_ratings():
     """Load ratings from u.data into database."""
+    print "Ratings"
+
+    # Delete all rows in table, so if we need to run this a second time,
+    # we won't be trying to add duplicate users
+    Rating.query.delete()
+
+    # Read u.user file and insert data
+    for row in open("seed_data/u.data"):
+        row = row.rstrip().decode('latin-1')
+        user_id, movie_id, score = row.split()[:3]
+        rating_id = counter
+        counter += 1
+
+
+        rating = Rating(user_id=user_id,
+                        movie_id=movie_id,
+                        score=score
+                        )
+
+        
+        db.session.add(rating)
+        # We need to add to the session or it won't ever be stored
+
+    # # Once we're done, we should commit our work
+    db.session.commit()
 
 
 def set_val_user_id():
@@ -104,7 +110,6 @@ def set_val_user_id():
     query = "SELECT setval('users_user_id_seq', :new_id)"
     db.session.execute(query, {'new_id': max_id + 1})
     db.session.commit()
-
 
 if __name__ == "__main__":
     connect_to_db(app)
