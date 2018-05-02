@@ -27,8 +27,8 @@ class User(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed."""
 
-        return "<User user_id={} email={}>".format(self.user_id,
-                                           self.email)
+        return "<User user_id={} email={} password={}>".format(self.user_id,
+                                           self.email, self.password)
 
 
 class Movie(db.Model):

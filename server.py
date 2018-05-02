@@ -25,7 +25,56 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
     return render_template("homepage.html")
-    # return "<html><body>Placeholder for the homepage.</body></html>"
+
+@app.route("/users")
+def user_list():
+    """Show list of users."""
+
+    users = User.query.all()
+    # print users
+    return render_template("user_list.html", users=users)
+
+@app.route('/users/:user_id')
+def user_details():
+
+    user_id = request.args.get('user_id')
+
+    return render_template("user_profile.html", user_id=user_id)
+
+
+
+
+@app.route("/register", methods=["GET"])
+def show_register():
+    """Show registration form."""
+
+    return render_template("register.html")
+
+
+
+@app.route("/register", methods=['POST'])
+def register_user():
+    """Register a new user."""
+    
+    email = request.form.get('user_email')
+    password = request.form.get('password')
+
+
+    query_db = db.session.query(User).filter_by(email=email).all()
+
+    # flash("query:" + query_db)
+
+    if query_db:
+        flash("User email already in use")
+        return redirect('/register')
+
+    new_user = User(email=email, password=password)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    flash("Sucessfully registered.")    
+    return redirect("/")
 
 
 if __name__ == "__main__":
