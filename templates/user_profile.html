@@ -3,30 +3,38 @@
 
   <h2>{{ user.email }}</h2>
 
-  <ul>
 
-        <li>
+
+        <div>
           ID: {{ user.user_id }}
-        </li>
+        </div>
 
-        <li>
+        <div>
            Email: {{ user.email }}
-        </li>
+        </div>
 
-        <li>
+        <div>
            Age: {{ user.age }}
-        </li>
+        </div>
 
-        <li>
+        <div>
            Zipcode: {{ user.zipcode }}
-        </li>
+        </div>
 
-        <li>
-           Ratings: 
-        </li>
+        <div>
+           Movie List:
+            <ul>
+              {% for movie in movies %}
+              <li>
+              Title:{{  movie[0] }} Score: {{ movie[1] }}
+              </li>
+              {% endfor %}
+            </ul>
+
+        </div>
 
 
-  </ul>
+
 
 {% endblock %}
 

@@ -75,6 +75,13 @@ def user_details(user_id):
     # get list of ratings from user
     ratings = Rating.query.filter_by(user_id=user.user_id).all()
 
+    movies = []
+
+    for rating in ratings:
+        score = rating.score
+        movie = Movie.query.filter_by(movie_id=rating.movie_id).first()
+        movies.append(tuple([movie.title, score, movie.movie_id]))
+
     return render_template("user_profile.html", user=user, movies=movies)
 
 
