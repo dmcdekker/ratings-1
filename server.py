@@ -68,8 +68,7 @@ def user_list():
 
 @app.route('/users/<int:user_id>')
 def user_details(user_id):
-
-
+    """ Show user profile """
 
     user = User.query.filter_by(user_id=user_id).all()[0]
     # get list of ratings from user
@@ -83,6 +82,42 @@ def user_details(user_id):
         movies.append(tuple([movie.title, score, movie.movie_id]))
 
     return render_template("user_profile.html", user=user, movies=movies)
+
+
+@app.route("/movies")
+def movie_list():
+    """Show list of movies"""
+
+    movies = Movie.query.order_by(Movie.title).all()
+    # print movies
+    return render_template("movie_list.html", movies=movies)
+
+
+
+@app.route('/movie/<int:movie_id>', methods=['GET'])
+def movie_details(movie_id):
+    """ Show page for a given movie"""
+
+    movie = Movie.query.filter_by(movie_id=movie_id).first()
+    ratings = Rating.query.filter_by(movie_id=movie_id).all()
+
+    return render_template('movie_profile.html', movie=movie, ratings=ratings)
+
+
+@app.route('/movie/<int:movie_id>', methods=['POST'])
+def record_rating():
+    """Submit rating to database"""
+    if session.get('user'):
+        user_rating = int(request.form.get('user-rating'))
+        flash(user_rating)
+        # check_rating = Rating.query.filter_by(movie_id=movie_id).first()
+        # if check_rating:
+        #     Movie.update().where(movie_id == check_rating.movie_id).values(score=user_rating)
+    flash("Please log in to rate movies.")
+    return redirect('/movies')
+
+
+
 
 
 @app.route("/login", methods=['GET'])
