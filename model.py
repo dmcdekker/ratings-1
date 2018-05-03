@@ -61,8 +61,10 @@ class Rating(db.Model):
                           primary_key=True)
     movie_id = db.Column(db.Integer,
                          db.ForeignKey('movies.movie_id'))
+
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.user_id'))
+
     score = db.Column(db.Integer)
 
     # Define relationship to user
@@ -79,19 +81,6 @@ class Rating(db.Model):
 
         return "<Rating rating_id={} movie_id={} user_id={} score={}>".format(self.rating_id, self.movie_id,
                                                                               self.user_id, self.score)
-# user = User.query.get(35)
-# ratings = Rating.query.filter_by(user_id=user.user_id).all()
-# movies = []
-
-# for r in ratings:
-#     movie = Movie.query.get(r.movie_id)
-#     movies.append(movie)
-
-
-# for m in movies:
-#     print m.title
-
-
 
 ##############################################################################
 # Helper functions

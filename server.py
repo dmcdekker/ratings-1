@@ -32,6 +32,7 @@ def show_register():
 
     return render_template("register.html")
 
+
 @app.route("/register", methods=['POST'])
 def register_user():
     """Register a new user."""
@@ -39,10 +40,7 @@ def register_user():
     email = request.form.get('user_email')
     password = request.form.get('password')
 
-
     query_db = db.session.query(User).filter_by(email=email).all()
-
-    # flash("query:" + query_db)
 
     if query_db:
         flash("User email already in use")
@@ -93,7 +91,6 @@ def movie_list():
     return render_template("movie_list.html", movies=movies)
 
 
-
 @app.route('/movie/<int:movie_id>', methods=['GET'])
 def movie_details(movie_id):
     """ Show page for a given movie"""
@@ -105,19 +102,23 @@ def movie_details(movie_id):
 
 
 @app.route('/movie/<int:movie_id>', methods=['POST'])
-def record_rating():
+def record_rating(movie_id):
     """Submit rating to database"""
-    if session.get('user'):
-        user_rating = int(request.form.get('user-rating'))
-        flash(user_rating)
-        # check_rating = Rating.query.filter_by(movie_id=movie_id).first()
-        # if check_rating:
-        #     Movie.update().where(movie_id == check_rating.movie_id).values(score=user_rating)
-    flash("Please log in to rate movies.")
+
+    current_user = session.get('user')
+    if current_user:
+        user_rating = request.form.get('user-rating')
+        check_rating = Rating.query.filter_by(movie_id=movie_id).first()
+
+        if check_rating:
+            check_rating.rating = user_rating
+        else:
+            db.session.add(Rating(user_id=current_user['user_id'], movie_id=movie_id, score=user_rating))
+        db.session.commit()
+            
+    else:
+        flash("Please log in to rate movies.")
     return redirect('/movies')
-
-
-
 
 
 @app.route("/login", methods=['GET'])
@@ -125,7 +126,6 @@ def get_login_info():
     """Show user login form."""
 
     return render_template("login.html")
-
 
 
 @app.route("/login", methods=['POST'])     
@@ -140,12 +140,13 @@ def log_user_in():
 
     if user_lookup:
         flash("Successfully logged in. Welcome!")
-        session['user'] = { 'email': email }
+        session['user'] = { 'email': email, 'user_id': user_lookup.user_id }
         user_id = user_lookup.user_id
         return redirect('/users/' + str(user_id))
 
     flash("Invalid username or password. Please try again.")
     return redirect('/login')
+
 
 @app.route("/logout")
 def log_user_out():

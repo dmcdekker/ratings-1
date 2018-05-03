@@ -7,8 +7,8 @@
 
     <h3>Rate this movie!</h3>
     
-    <form action='/movie/{{ movie.movie_id }}'>
-      <select submit='/movie/{{ movie.movie_id }}' name='user-rating' method='POST'>
+    <form action='/movie/{{ movie.movie_id }}' method='post'>
+      <select submit='/movie/{{ movie.movie_id }}' name='user-rating'>
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -19,9 +19,6 @@
       <input type="submit" value="Submit">
     </form>  
   </div>  
-
-
-
 
   <div>
      <h3>Rating List:</h3>
@@ -34,8 +31,5 @@
       </ul>
 
   </div>
-
-
-
 
 {% endblock %}
